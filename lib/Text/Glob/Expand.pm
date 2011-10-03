@@ -6,14 +6,223 @@ use Carp;
 
 use version; our $VERSION = qv('0.1');
 
-# Other recommended modules (uncomment to use):
-#  use IO::Prompt;
-#  use Perl6::Export;
-#  use Perl6::Slurp;
-#  use Perl6::Say;
+use Exporter qw(import);
 
+our @EXPORT_OK = qw(parse_glob parse_glob_with_depth explode explode_with_structure);
 
-# Module implementation here
+sub parse_glob {
+    my $str = shift;
+
+    my $pos;
+
+    my @c_stack = ('');
+    my @alt_count = ();
+    my @seq_count = (1);
+
+    my $add_char = sub {
+        $c_stack[-1] .= $_;
+    };
+
+    my $start_brace = sub {
+        push @c_stack, '';
+        push @alt_count, 1;
+        ++$seq_count[-1];
+        push @seq_count, 1;
+    };
+
+    my $new_alternative = sub {
+        my $num_elems = pop @seq_count;
+        push @c_stack, [splice @c_stack, -$num_elems], '';
+        ++$alt_count[-1];
+        push @seq_count, 1;
+    };
+
+    my $end_brace = sub {
+        my $num_elems = pop @seq_count;
+        push @c_stack, [splice @c_stack, -$num_elems];
+        $num_elems = pop @alt_count;
+        push @c_stack, [splice @c_stack, -$num_elems], '';
+        ++$seq_count[-1];
+    };
+    
+
+    my $states = {
+        start => {
+            '\\' => sub {
+                'escape'
+            },
+            '{' => sub {
+                $start_brace->();
+                'start';
+            },
+            '}' => sub {
+                $end_brace->();
+                'start';
+            },
+            ',' => sub {
+                @alt_count?
+                    $new_alternative->() :
+                    $add_char->() ; # possibly this should be illegal?
+                'start';
+            },
+            '' => sub {
+                $add_char->();
+                'start';
+            }
+        },
+        
+
+        escape => {
+            '' => sub { 
+                $add_char->();
+                'start';
+            },
+        }
+    };
+        
+    
+    my $state = 'start';
+    for $pos (0..length($str)-1) {
+        my $table = $states->{$state}
+            or die "no such state '$state'";
+        
+        for (substr $str, $pos, 1) {
+            my $action =
+                $table->{$_} || 
+                $table->{''} ||
+                die "no handler for state '$state' looking at '$_' pos $pos";
+        
+            $state = $action->();
+        }
+    }
+
+    return \@c_stack;
+};
+
+sub parse_glob_with_depth {
+    my $str = shift;
+
+    my $pos;
+    my $depth = 0;
+
+    my $new_segment = sub { ['', $depth] };
+
+    my @c_stack = $new_segment->();
+    my @alt_count = ();
+    my @seq_count = (1);
+
+    my $add_char = sub {
+        $c_stack[-1][0] .= $_;
+    };
+
+    my $start_brace = sub {
+        ++$depth;
+        push @c_stack, $new_segment->();
+        push @alt_count, 1;
+        ++$seq_count[-1];
+        push @seq_count, 1;
+    };
+
+    my $new_alternative = sub {
+        my $num_elems = pop @seq_count;
+        push @c_stack, [splice @c_stack, -$num_elems], $new_segment->();
+        ++$alt_count[-1];
+        push @seq_count, 1;
+    };
+
+    my $end_brace = sub {
+        --$depth;
+        my $num_elems = pop @seq_count;
+        push @c_stack, [splice @c_stack, -$num_elems];
+        $num_elems = pop @alt_count;
+        push @c_stack, [splice @c_stack, -$num_elems], $new_segment->();
+        ++$seq_count[-1];
+    };
+    
+
+    my $states = {
+        start => {
+            '\\' => sub {
+                'escape'
+            },
+            '{' => sub {
+                $start_brace->();
+                'start';
+            },
+            '}' => sub {
+                $end_brace->();
+                'start';
+            },
+            ',' => sub {
+                @alt_count?
+                    $new_alternative->() :
+                    $add_char->() ; # possibly this should be illegal?
+                'start';
+            },
+            '' => sub {
+                $add_char->();
+                'start';
+            }
+        },
+        
+
+        escape => {
+            '' => sub { 
+                $add_char->();
+                'start';
+            },
+        }
+    };
+        
+    
+    my $state = 'start';
+    for $pos (0..length($str)-1) {
+        my $table = $states->{$state}
+            or die "no such state '$state'";
+        
+        for (substr $str, $pos, 1) {
+            my $action =
+                $table->{$_} || 
+                $table->{''} ||
+                die "no handler for state '$state' looking at '$_' pos $pos";
+        
+            $state = $action->();
+        }
+    }
+
+    return \@c_stack;
+};
+
+sub explode {
+    my $traverse;
+
+    $traverse = sub {
+        return [] unless @_;
+        my $first = shift;
+
+        if (!ref $first) {
+            # we have a string segment
+            return [[$first]] unless @_;
+            
+            my $exploded = $traverse->(@_);
+            unshift @$_, $first for @$exploded;
+            return $exploded;
+        }
+        else {
+            # we have a arrayref of alternatives from a brace
+            my @exploded;
+            foreach my $seq (@$first) {
+                die "unexpected scalar" if !ref $seq;
+                my $exploded2 = $traverse->(@$seq, @_);
+                push @exploded, @$exploded2;
+            }
+            return \@exploded;
+        }
+    };
+
+    my $parsed_glob = shift;
+    return $traverse->(@$parsed_glob);
+}
 
 
 1; # Magic true value required at end of module
