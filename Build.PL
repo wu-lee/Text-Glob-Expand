@@ -33,7 +33,7 @@ my $builder = Module::Build->new
              repository =>
                 'https://github.com/wu-lee/Text-Glob-Expand',
         },
-        keywords  => [],
+        keywords  => [qw(text glob pattern expand braces hostnames)],
      },
      configure_requires => 
      {
