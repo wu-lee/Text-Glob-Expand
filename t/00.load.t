@@ -12,7 +12,7 @@ use Test::More 'no_plan';
 my $script_dir = "$Bin/../script";
 
 # We need to use blib/lib and not lib, since some 
-# modules depend on the Questionnaire::ConfigData module
+# modules depend on the ConfigData.pm module
 # generated there by Module::Build.
 # SO MAKE SURE YOU RUN ./Build BEFORE RUNNING THIS TEST DIRECTLY!
 my $lib_dir = "$Bin/../blib/lib"; 
