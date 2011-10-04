@@ -4,11 +4,21 @@ use Text::Glob::Expand::Permutation;
 use warnings;
 use strict;
 use Carp;
+use Scalar::Util qw(refaddr);
 
 use version; our $VERSION = qv('0.1');
 
 use Exporter qw(import);
 our @EXPORT_OK = qw(parse explode);
+
+# Cache ->_explode results here
+our %CACHE;
+
+# and queue cached items for deletion
+our @CACHE_QUEUE;
+
+# when the number of cached items exceeds this.
+our $MAX_CACHING = 100;
 
 ######################################################################
 # Private functions
@@ -176,11 +186,41 @@ sub parse {
 };
 
 
+# Uncached version
+sub _explode {
+    my $self = shift;
+
+    # calculate result
+    my $exploded = $self->_traverse(@$self);
+
+    return [map { $self->_transform(0, $_) } @$exploded];
+}
+
 sub explode {
     my $self = shift;
-    my $exploded = $self->_traverse(@$self);
-    
-    return [map { $self->_transform(0, $_) } @$exploded];
+
+    # handle caching
+    if ($MAX_CACHING > 0) {
+        # get (possibly cached) result
+        my $id = refaddr $self;
+        my $exploded = $CACHE{$id};
+        return $exploded 
+            if $exploded;
+
+        $exploded = $self->_explode(@$self);
+
+        unshift @CACHE_QUEUE, $id;
+        if (@CACHE_QUEUE > $MAX_CACHING) {
+            delete @CACHE{splice @CACHE_QUEUE, $MAX_CACHING};
+        }
+
+        return $exploded;
+    }
+
+    %CACHE = ();
+    @CACHE_QUEUE = ();
+
+    return $self->_explode(@$self);
 }
 
 sub explode_format {
