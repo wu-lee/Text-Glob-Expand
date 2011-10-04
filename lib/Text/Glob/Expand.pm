@@ -1,5 +1,6 @@
 package Text::Glob::Expand;
-
+use Text::Glob::Expand::Segment;
+use Text::Glob::Expand::Permutation;
 use warnings;
 use strict;
 use Carp;
@@ -7,85 +8,77 @@ use Carp;
 use version; our $VERSION = qv('0.1');
 
 use Exporter qw(import);
+our @EXPORT_OK = qw(parse explode);
 
-our @EXPORT_OK = qw(parse explode explode_with_structure);
+######################################################################
+# Private functions
 
+sub _partition {
+    my $depth = shift;
+    my @partitions;
+    my $partition;
+    foreach my $elem (@_) {
+        if ($elem->depth > $depth) {
+            push @$partition, $elem;
+        }
+        else {
+            push @partitions, $partition
+                if $partition 
+                    && @$partition;
+            $partition = [];
+        }
+    }
+    push @partitions, $partition
+        if @$partition;
+    return @partitions;
+}
 
-{
-    package Text::Glob::Expand::Segment;
-    use strict;
-    use warnings;
+######################################################################
+# Private methods
 
-    sub depth { shift->[1] }
-    sub text { shift->[0] }
+sub _traverse {
+    my $self = shift;
+    return [] unless @_;
+    my $first = shift;
+    
+    if (ref $first eq 'Text::Glob::Expand::Segment') {
+        # we have a string segment
+        return [[$first]] unless @_;
+        
+        my $exploded = $self->_traverse(@_);
+        unshift @$_, $first for @$exploded;
+        return $exploded;
+    }
+    else {
+            # we have a arrayref of alternatives from a brace
+        my @exploded;
+        foreach my $seq (@$first) {
+            die "unexpected scalar '$seq'" if !ref $seq;
+            my $exploded2 = $self->_traverse(@$seq, @_);
+            push @exploded, @$exploded2;
+        }
+        return \@exploded;
+    }
 }
 
 
-{
-    package Text::Glob::Expand::Permutation;
-    use strict;
-    use warnings;
-    use Carp qw(croak);
-
-    sub unwrap { shift->[0] }
-
-    sub _percent_expand {
-        my $self = shift;
-        my $match = shift;
-
-        if ($match eq "%") {
-            return "%";
-        }
-        
-        if ($match eq "0") {
-            return $self->[0];
-        }
-
-        my $curr = $self;
-        my @digits = split /[.]/, $1;
-        
-        while(@digits) {
-            my $digit = shift @digits;
-            
-            die "invalid capture name %$1 (contains zero)"
-                unless $digit > 0; 
-            $curr = $curr->[$digit];
-            die "invalid capture name %$1 (reference to non-existent brace))\n"
-                unless $curr && ref $curr;
-        }
-        return $curr->[0]
+sub _transform {
+    my $self = shift;
+    my $depth = shift;
+    my $permutation = shift;
+    my $flat =  join '', map { $_->[0] } @$permutation; 
+    if (my @deeper = _partition $depth, @$permutation) {
+        return bless (
+            [$flat, map { $self->_transform($depth+1, $_)} @deeper], 
+            'Text::Glob::Expand::Permutation',
+        );
     }
-
-    sub expand {
-        my ($self, $format) = @_;
-        croak "you must supply a format string to expand"
-            unless defined $format;
-
-        eval {
-            $format =~
-                s{
-                     %
-                     (
-                         %
-                     |
-                         (?: \d+ [.] )*
-                         \d+
-                     )
-                 }
-                 {
-                     $self->_percent_expand($1)
-                 }gex;
-            1;
-        }
-        or do {
-            chomp(my $error = $@);
-            croak "$error when applying '$self->[0]' to '$format'";
-        };
-
-        return $format;
-    }
-
+    return bless [$flat], 'Text::Glob::Expand::Permutation';
 }
+
+
+######################################################################
+# Public methods
 
 sub parse {
     my $class = shift;
@@ -182,98 +175,6 @@ sub parse {
     return bless \@c_stack, __PACKAGE__;
 };
 
-sub explode_ {
-    my $traverse;
-
-    $traverse = sub {
-        return [] unless @_;
-        my $first = shift;
-
-        if (!ref $first) {
-            # we have a string segment
-            return [[$first]] unless @_;
-            
-            my $exploded = $traverse->(@_);
-            unshift @$_, $first for @$exploded;
-            return $exploded;
-        }
-        else {
-            # we have a arrayref of alternatives from a brace
-            my @exploded;
-            foreach my $seq (@$first) {
-                die "unexpected scalar" if !ref $seq;
-                my $exploded2 = $traverse->(@$seq, @_);
-                push @exploded, @$exploded2;
-            }
-            return \@exploded;
-        }
-    };
-
-    my $parsed_glob = shift;
-    return $traverse->(@$parsed_glob);
-}
-
-
-sub _partition {
-    my $depth = shift;
-    my @partitions;
-    my $partition;
-    foreach my $elem (@_) {
-        if ($elem->depth > $depth) {
-            push @$partition, $elem;
-        }
-        else {
-            push @partitions, $partition
-                if $partition 
-                    && @$partition;
-            $partition = [];
-        }
-    }
-    push @partitions, $partition
-        if @$partition;
-    return @partitions;
-}
-
-sub _traverse {
-    my $self = shift;
-    return [] unless @_;
-    my $first = shift;
-    
-    if (ref $first eq 'Text::Glob::Expand::Segment') {
-        # we have a string segment
-        return [[$first]] unless @_;
-        
-        my $exploded = $self->_traverse(@_);
-        unshift @$_, $first for @$exploded;
-        return $exploded;
-    }
-    else {
-            # we have a arrayref of alternatives from a brace
-        my @exploded;
-        foreach my $seq (@$first) {
-            die "unexpected scalar '$seq'" if !ref $seq;
-            my $exploded2 = $self->_traverse(@$seq, @_);
-            push @exploded, @$exploded2;
-        }
-        return \@exploded;
-    }
-}
-
-
-sub _transform {
-    my $self = shift;
-    my $depth = shift;
-    my $permutation = shift;
-    my $flat =  join '', map { $_->[0] } @$permutation; 
-    if (my @deeper = _partition $depth, @$permutation) {
-        return bless (
-            [$flat, map { $self->_transform($depth+1, $_)} @deeper], 
-            'Text::Glob::Expand::Permutation',
-        );
-    }
-    return bless [$flat], 'Text::Glob::Expand::Permutation';
-}
-
 
 sub explode {
     my $self = shift;
@@ -288,7 +189,7 @@ __END__
 
 =head1 NAME
 
-Text::Glob::Expand - [One line description of module's purpose here]
+Text::Glob::Expand - permute and expand glob-like text patterns
 
 
 =head1 VERSION
@@ -298,13 +199,17 @@ This document describes Text::Glob::Expand version 0.1
 
 =head1 SYNOPSIS
 
+The original use case was to specify hostname aliases and expansions
+thereof.
+
     use Text::Glob::Expand;
 
-=for author to fill in:
-    Brief code example(s) here showing commonest usage(s).
-    This section will be as far as many users bother reading
-    so make it as educational and exeplary as possible.
-  
+    my $hosts = "{www{1,2,3},mail{1,2},ftp{1,2}}";
+    my $glob = Text::Glob::Expand->parse($hosts);
+    my $permutations = $glob->explode;
+    my $format = "%1.somewhere.co.uk";
+    my %aliases = map { $_->unwrap => $_->expand($format) } @$permutations;
+
   
 =head1 DESCRIPTION
 
