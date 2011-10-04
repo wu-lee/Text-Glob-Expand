@@ -1,32 +1,77 @@
-Text-Glob-Expand version 0.0.1
+NAME
+    Text::Glob::Expand - permute and expand glob-like text patterns
 
-[ REPLACE THIS...
+VERSION
+    This document describes Text::Glob::Expand version 0.1
 
-  The README is used to introduce the module and provide instructions on
-  how to install the module, any machine dependencies it may have (for
-  example C compilers and installed libraries) and any other information
-  that should be understood before the module is installed.
+SYNOPSIS
+    The original use case was to specify hostname aliases and expansions
+    thereof.
 
-  A README file is required for CPAN modules since CPAN extracts the
-  README file from a module distribution so that people browsing the
-  archive can use it get an idea of the modules uses. It is usually a
-  good idea to provide version information here so that people can
-  decide whether fixes for the module are worth downloading.
-]
+        use Text::Glob::Expand;
 
+        my $hosts = "{www{1,2,3},mail{1,2},ftp{1,2}}";
+        my $glob = Text::Glob::Expand->parse($hosts);
+        my $permutations = $glob->explode;
+        my $format = "%1.somewhere.co.uk";
+        my %aliases = map { $_->unwrap => $_->expand($format) } @$permutations;
 
-INSTALLATION
+DESCRIPTION
+INTERFACE
+DIAGNOSTICS
+    "Error message here, perhaps with %s placeholders"
+        [Description of error here]
 
-perl Build.PL
-./Build install
+    "Another error message here"
+        [Description of error here]
+
+        [Et cetera, et cetera]
+
+CONFIGURATION AND ENVIRONMENT
+    Text::Glob::Expand requires no configuration files or environment
+    variables.
 
 DEPENDENCIES
+    None.
 
-None.
+INCOMPATIBILITIES
+    None reported.
 
+BUGS AND LIMITATIONS
+    No bugs have been reported.
 
-COPYRIGHT AND LICENCE
+    Please report any bugs or feature requests to
+    "bug-Text-Glob-Expand@rt.cpan.org", or through the web interface at
+    <http://rt.cpan.org>.
 
-Copyright (C) 2011, Nick Stokoe
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+AUTHOR
+    Nick Stokoe "<npw@cpan.org>"
+
+LICENCE AND COPYRIGHT
+    Copyright (c) 2011, Nick Stokoe "<npw@cpan.org>". All rights reserved.
+
+    This module is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself. See perlartistic.
+
+DISCLAIMER OF WARRANTY
+    BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+    FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
+    OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+    PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
+    EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+    ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
+    YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+    NECESSARY SERVICING, REPAIR, OR CORRECTION.
+
+    IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+    WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+    REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE LIABLE
+    TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL, OR
+    CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE
+    SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+    RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+    FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+    SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+    DAMAGES.
+
