@@ -5,40 +5,8 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
 use Text::Glob::Expand qw(explode);
-use Test::More tests => 49;
+use Test::More tests => 21;
 
-for ("ab{s,d{e,f}g,h}i",
-     "aa{a{a,b}c{a,b}}d{e,f}") 
-{
-#    note explain $_;
-#    note "\n";
-#    note explain parse_glob $_;
-};
-
-
-# a{b,cr}d
-# abd b  # 1 1
-# acrd cr  # 1 2
-
-
-# a{b,c{d,e}f}g
-# [abg b]
-# [acdfg [cdf d]
-# [acefg [cef e]] # %0 = acdfg %1 = cdf %1.1 = e
-
-
-# a{b}d  
-# a{c{d}f}g 
-# a{c{e}f}g
-
-# [abd  [b]]    %1 = b 
-# [a{c{d}f}g [cdf [d]]]  %1 = cdf %1.1 = d 
-# [a{c{e}f}g [cef [e]]]
-
-# [abd  [b]]    $_ = b 
-# [a{c{d}f}g [cdf [d]]]  %1 = cdf %1.1 = d 
-# [a{c{e}f}g [cef [e]]]
- 
 my @cases = (
     ["aaa" => ["aaa"],
      ".%0." => [".aaa."]],
