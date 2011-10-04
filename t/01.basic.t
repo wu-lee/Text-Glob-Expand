@@ -62,18 +62,18 @@ for my $case (@cases) {
     my ($expr, $expected) = splice @$case, 0, 2;
 
     # check a simple glob expansion
-    my $glob = Text::Glob::Expand::Glob->parse($expr);
-    isa_ok $glob, "Text::Glob::Expand::Glob";
-    my $result = $glob->explode;
-    is_deeply $result, $expected, "simple case: $expr ok";
+#    my $glob = Text::Glob::Expand->parse($expr);
+#    isa_ok $glob, "Text::Glob::Expand";
+#    my $result = $glob->explode;
+#    is_deeply $result, $expected, "simple case: $expr ok";
 
-    is_deeply [explode $expr], $expected, "simple functional case: $expr ok";
+#    is_deeply [explode $expr], $expected, "simple functional case: $expr ok";
 
 
     # check the structured glob expansion is equivalent
-    my $sglob = Text::Glob::Expand::StructuredGlob->parse($expr);
-    isa_ok $sglob, "Text::Glob::Expand::StructuredGlob";
-    $result = $sglob->explode;
+    my $glob = Text::Glob::Expand->parse($expr);
+    isa_ok $glob, "Text::Glob::Expand";
+    my $result = $glob->explode;
     my $unwrapped_result = [map { $_->unwrap } @$result];
     is_deeply $unwrapped_result, $expected, "structured case: $expr ok";
 
@@ -83,7 +83,7 @@ for my $case (@cases) {
 
         is_deeply $fmt_result, $expected, "formatting case: $format => $expr ok";
 
-        is_deeply [explode $expr, $format], $expected, "formatting functional case: $format => $expr ok";
+ #       is_deeply [explode $expr, $format], $expected, "formatting functional case: $format => $expr ok";
     }
 
 }
