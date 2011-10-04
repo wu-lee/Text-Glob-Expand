@@ -42,8 +42,8 @@ for my $case (@cases) {
     my $glob = Text::Glob::Expand->parse($expr);
     isa_ok $glob, "Text::Glob::Expand";
     my $result = $glob->explode;
-    my $unwrapped_result = [map { $_->unwrap } @$result];
-    is_deeply $unwrapped_result, $expected, "structured case: $expr ok";
+    my $text_result = [map { $_->text } @$result];
+    is_deeply $text_result, $expected, "structured case: $expr ok";
 
     # check the structured glob formatting
     while(my ($format, $fmt_expected) = splice @$case, 0, 2) {

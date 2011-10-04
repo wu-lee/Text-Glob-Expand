@@ -229,7 +229,7 @@ sub explode_format {
 
     my $exploded = $self->explode;
     
-    return {map { $_->unwrap => $_->expand($format) } @$exploded};
+    return {map { $_->text => $_->expand($format) } @$exploded};
 }
 
 
@@ -259,7 +259,7 @@ thereof.
     my $permutations = $glob->explode("%1.somewhere.co.uk");
     # $permutations = [qw(www1 www2 www3 mail1 mail2 ftp1 ftp2)]
 
-    my $permutations = $glob->explode_format("%1.somewhere.co.uk");
+    my $permutations = $glob->explode_format("%0.somewhere.co.uk");
     # $permutations = {
     #     www1 => 'www1.somewhere.co.uk',
     #     www2 => 'www2.somewhere.co.uk',

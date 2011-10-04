@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Carp qw(croak);
 
-sub unwrap { shift->[0] }
+sub text { shift->[0] }
 
 sub _percent_expand {
     my $self = shift;
