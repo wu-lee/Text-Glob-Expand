@@ -158,7 +158,7 @@ sub parse {
         
     
     my $state = 'start';
-    for $pos (0..length($str)-1) {
+    for $pos (0..length($str)-1) { ## no critic RequireLexicalLoopIterators 
         my $table = $states->{$state}
             or die "no such state '$state'";
         
