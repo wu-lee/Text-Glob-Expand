@@ -17,4 +17,6 @@ CVS
 ^pod2htmd.tmp$
 ^pod2htmi.tmp$
 ^tmp
-^nytprof
+^nytprof^MYMETA\.yml$
+^MYMETA\.json$
+^MYMETA\.yml$

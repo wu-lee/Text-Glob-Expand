@@ -23,7 +23,7 @@ my $builder = Module::Build->new
      license             => 'artistic',
      dist_author         => 'Nick Stokoe <npw@cpan.org>',
      dist_version_from   => 'lib/Text/Glob/Expand.pm',
-     dist_abstract       => '',
+     dist_abstract       => 'permute and expand glob-like text patterns',
      create_readme       => 1,
      create_makefile_pl  => 'traditional',
      meta_merge          =>
@@ -51,7 +51,7 @@ my $builder = Module::Build->new
      recommends => 
      {
      },
-     test_files         => [ rscan_dir('t', '\.t$'), rscan_dir('t', '\.t$') ],
+     test_files         => [ rscan_dir('t', '\.t$'), rscan_dir('xt', '\.t$') ],
      add_to_cleanup      => [ 'Text-Glob-Expand-*' ],
     );
 
