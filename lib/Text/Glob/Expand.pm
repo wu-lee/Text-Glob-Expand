@@ -255,10 +255,20 @@ thereof.
 
     my $hosts = "{www{1,2,3},mail{1,2},ftp{1,2}}";
     my $glob = Text::Glob::Expand->parse($hosts);
-    my $permutations = $glob->explode;
-    my $format = "%1.somewhere.co.uk";
-    my %aliases = map { $_->unwrap => $_->expand($format) } @$permutations;
 
+    my $permutations = $glob->explode("%1.somewhere.co.uk");
+    # $permutations = [qw(www1 www2 www3 mail1 mail2 ftp1 ftp2)]
+
+    my $permutations = $glob->explode_format("%1.somewhere.co.uk");
+    # $permutations = {
+    #     www1 => 'www1.somewhere.co.uk',
+    #     www2 => 'www2.somewhere.co.uk',
+    #     www3 => 'www3.somewhere.co.uk',
+    #     mail1 => 'mail1.somewhere.co.uk',
+    #     mail2 => 'mail2.somewhere.co.uk',
+    #     ftp1 => 'ftp1.somewhere.co.uk',
+    #     ftp2 => 'ftp2.somewhere.co.uk',
+    # }
   
 =head1 DESCRIPTION
 
