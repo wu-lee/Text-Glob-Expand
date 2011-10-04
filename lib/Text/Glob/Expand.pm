@@ -183,6 +183,15 @@ sub explode {
     return [map { $self->_transform(0, $_) } @$exploded];
 }
 
+sub explode_format {
+    my $self = shift;
+    my $format = shift;
+
+    my $exploded = $self->explode;
+    
+    return {map { $_->unwrap => $_->expand($format) } @$exploded};
+}
+
 
 1; # Magic true value required at end of module
 __END__

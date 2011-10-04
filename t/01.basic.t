@@ -5,7 +5,7 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
 use Text::Glob::Expand qw(explode);
-use Test::More tests => 21;
+use Test::More tests => 35;
 
 my @cases = (
     ["aaa" => ["aaa"],
@@ -46,10 +46,16 @@ for my $case (@cases) {
     is_deeply $unwrapped_result, $expected, "structured case: $expr ok";
 
     # check the structured glob formatting
-    while(my ($format, $expected) = splice @$case, 0, 2) {
+    while(my ($format, $fmt_expected) = splice @$case, 0, 2) {
         my $fmt_result = [map { $_->expand($format) } @$result];
+        is_deeply $fmt_result, $fmt_expected, "formatting case: $format => $expr ok";
 
-        is_deeply $fmt_result, $expected, "formatting case: $format => $expr ok";
+        my $hash_result = $glob->explode_format($format);
+
+        is_deeply [sort keys %$hash_result], [sort @$expected], 
+            "hashed keys match: $format => $expr ok"; 
+        is_deeply [sort values %$hash_result], [sort @$fmt_expected], 
+            "hashed values match: $format => $expr ok"; 
 
  #       is_deeply [explode $expr, $format], $expected, "formatting functional case: $format => $expr ok";
     }
