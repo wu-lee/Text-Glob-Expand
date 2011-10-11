@@ -8,9 +8,6 @@ use Scalar::Util qw(refaddr);
 
 use version; our $VERSION = qv('0.1');
 
-use Exporter qw(import);
-our @EXPORT_OK = qw(parse explode);
-
 # Cache ->_explode results here
 our %CACHE;
 
