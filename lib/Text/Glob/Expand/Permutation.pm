@@ -70,98 +70,71 @@ Text::Glob::Expand::Permutation - describes one possible expansion of a glob pat
 
 =head1 SYNOPSIS
 
-  
-=head1 DESCRIPTION
+This is an internal class, returned in the which you won't normally
+create as a user.  C<< Text::Glob::Expand->explode >> returns an
+arrayref containing objects of this class.
 
-=for author to fill in:
-    Write a full description of the module and its features here.
-    Use subsections (=head2, =head3) as appropriate.
+It can be used to get the permutation text, or a formatted version of
+the permutation's components.
 
+   ($first, @rest) = Text::Glob::Expand->parse("a{b,c}");
+   print $first->text;
+   # "ab"
+
+   print $first->expand("text is %0 and first brace is %1"); 
+   # "text is ab and first brace is b"
 
 =head1 INTERFACE 
 
-=for author to fill in:
-    Write a separate section listing the public components of the modules
-    interface. These normally consist of either subroutines that may be
-    exported, or methods that may be called on objects belonging to the
-    classes provided by the module.
+=head2 C<< $str = $obj->text >>
+
+Returns the unembellished text of this permutation.
+
+=head2 C<< $str = $obj->expand($format) >>>
+
+Returns the string C<$format> expanded with the components of the permutation.
+
+The following expansions are made:
+
+=over 4
+
+=item C<%%> 
+
+An escaped percent, expands to C<%>
+
+=item C<%0>
+
+Expands to the whole permutation text, the same as returned by C<< ->text >>.
+
+=item C<%n>
+
+(Where C<n> is a positive decimal number.)  Expands to this permutation's
+contribution from the nth brace (numbering starts at 1).
+
+This may throw an exception if the number is larger than the number of braces.
+
+=item C<%n.n>
+
+(Where C<n.n> is a sequence of positive decimal numbers, delimited by
+periods.)  Expands to this permutations contribution from a nested
+brace, if it exists (otherwise an error will be thrown).
+
+So, for example, C<%1.1> is the first nested brace within the first
+brace, and C<%10,3,2> is the second brace within the third brace
+within the 10th brace.
+
+=back
 
 
 =head1 DIAGNOSTICS
+
+TDB
 
 =for author to fill in:
     List every single error and warning message that the module can
     generate (even the ones that will "never happen"), with a full
     explanation of each problem, one or more likely causes, and any
     suggested remedies.
-
-=over
-
-=item C<< Error message here, perhaps with %s placeholders >>
-
-[Description of error here]
-
-=item C<< Another error message here >>
-
-[Description of error here]
-
-[Et cetera, et cetera]
-
-=back
-
-
-=head1 CONFIGURATION AND ENVIRONMENT
-
-=for author to fill in:
-    A full explanation of any configuration system(s) used by the
-    module, including the names and locations of any configuration
-    files, and the meaning of any environment variables or properties
-    that can be set. These descriptions must also include details of any
-    configuration language used.
-  
-Text::Glob::Expand requires no configuration files or environment variables.
-
-
-=head1 DEPENDENCIES
-
-=for author to fill in:
-    A list of all the other modules that this module relies upon,
-    including any restrictions on versions, and an indication whether
-    the module is part of the standard Perl distribution, part of the
-    module's distribution, or must be installed separately. ]
-
-None.
-
-
-=head1 INCOMPATIBILITIES
-
-=for author to fill in:
-    A list of any modules that this module cannot be used in conjunction
-    with. This may be due to name conflicts in the interface, or
-    competition for system or program resources, or due to internal
-    limitations of Perl (for example, many modules that use source code
-    filters are mutually incompatible).
-
-None reported.
-
-
-=head1 BUGS AND LIMITATIONS
-
-=for author to fill in:
-    A list of known problems with the module, together with some
-    indication Whether they are likely to be fixed in an upcoming
-    release. Also a list of restrictions on the features the module
-    does provide: data types that cannot be handled, performance issues
-    and the circumstances in which they may arise, practical
-    limitations on the size of data sets, special cases that are not
-    (yet) handled, etc.
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<bug-Text-Glob-Expand@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
 
 =head1 AUTHOR
 
