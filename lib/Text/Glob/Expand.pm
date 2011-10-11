@@ -249,7 +249,7 @@ This document describes Text::Glob::Expand version 0.1
 =head1 SYNOPSIS
 
 The original use case was to specify hostname aliases and expansions
-thereof.
+thereof.  For example:
 
     use Text::Glob::Expand;
 
@@ -270,23 +270,33 @@ thereof.
     #     ftp2 => 'ftp2.somewhere.co.uk',
     # }
   
-=head1 DESCRIPTION
-
-=for author to fill in:
-    Write a full description of the module and its features here.
-    Use subsections (=head2, =head3) as appropriate.
-
-
 =head1 INTERFACE 
 
-=for author to fill in:
-    Write a separate section listing the public components of the modules
-    interface. These normally consist of either subroutines that may be
-    exported, or methods that may be called on objects belonging to the
-    classes provided by the module.
+
+=head2 C<< $obj = $class->parse($string) >>
+
+This is the constructor.  It parses a string, and returns a
+C<Text::Glob::Expand> object.
+
+=head2 C<< $arrayref = $obj->explode >>
+
+This returns an arrayref containing all the expanded permutations
+generated from the string parsed by the constructor.
+
+(The result is cached, and returned again if this is called more than
+once.  See C<$MAX_CACHING>.)
+
+=head2 C<< $hashref = $obj->explode_format($format) >>
+
+This returns a hashref mapping each expanded permutation to a string
+generated from the C<$format> parameter.
+
+(The return value is not cached, since the result depend on C<$format>.)
 
 
 =head1 DIAGNOSTICS
+
+TBD
 
 =for author to fill in:
     List every single error and warning message that the module can
@@ -294,43 +304,31 @@ thereof.
     explanation of each problem, one or more likely causes, and any
     suggested remedies.
 
-=over
-
-=item C<< Error message here, perhaps with %s placeholders >>
-
-[Description of error here]
-
-=item C<< Another error message here >>
-
-[Description of error here]
-
-[Et cetera, et cetera]
-
-=back
-
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
-=for author to fill in:
-    A full explanation of any configuration system(s) used by the
-    module, including the names and locations of any configuration
-    files, and the meaning of any environment variables or properties
-    that can be set. These descriptions must also include details of any
-    configuration language used.
-  
-Text::Glob::Expand requires no configuration files or environment variables.
+C<Text::Glob::Expand> requires no configuration files or environment variables.
 
+There is one configurable option in the form of a package variable.
+
+=head2 C<$MAX_CACHING>
+
+The package variable C<$Text::Glob::Expand::MAX_CACHING> can be used
+to control or disable the caching done by the C<< ->explode >> method.
+It should be a positive integer, or zero.
+
+The default value is 100, which means that up to 100
+C<Text::Glob::Expand> objects' C<< ->explode >> results will be
+cached, but no more.  You can disable caching by setting this to zero
+or less.
 
 =head1 DEPENDENCIES
 
-=for author to fill in:
-    A list of all the other modules that this module relies upon,
-    including any restrictions on versions, and an indication whether
-    the module is part of the standard Perl distribution, part of the
-    module's distribution, or must be installed separately. ]
+The dependencies should be minimal - I aim to have none.
 
-None.
-
+For a definitive answer, see the Build.PL file included in the
+distribution, or use the dependencies tool on
+L<http://search.cpan.org>
 
 =head1 INCOMPATIBILITIES
 
