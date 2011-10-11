@@ -6,33 +6,68 @@ VERSION
 
 SYNOPSIS
     The original use case was to specify hostname aliases and expansions
-    thereof.
+    thereof. For example:
 
         use Text::Glob::Expand;
 
         my $hosts = "{www{1,2,3},mail{1,2},ftp{1,2}}";
         my $glob = Text::Glob::Expand->parse($hosts);
-        my $permutations = $glob->explode;
-        my $format = "%1.somewhere.co.uk";
-        my %aliases = map { $_->unwrap => $_->expand($format) } @$permutations;
 
-DESCRIPTION
+        my $permutations = $glob->explode("%1.somewhere.co.uk");
+        # $permutations = [qw(www1 www2 www3 mail1 mail2 ftp1 ftp2)]
+
+        my $permutations = $glob->explode_format("%0.somewhere.co.uk");
+        # $permutations = {
+        #     www1 => 'www1.somewhere.co.uk',
+        #     www2 => 'www2.somewhere.co.uk',
+        #     www3 => 'www3.somewhere.co.uk',
+        #     mail1 => 'mail1.somewhere.co.uk',
+        #     mail2 => 'mail2.somewhere.co.uk',
+        #     ftp1 => 'ftp1.somewhere.co.uk',
+        #     ftp2 => 'ftp2.somewhere.co.uk',
+        # }
+
 INTERFACE
+  "$obj = $class->parse($string)"
+    This is the constructor. It parses a string, and returns a
+    "Text::Glob::Expand" object.
+
+  "$arrayref = $obj->explode"
+    This returns an arrayref containing all the expanded permutations
+    generated from the string parsed by the constructor.
+
+    (The result is cached, and returned again if this is called more than
+    once. See $MAX_CACHING.)
+
+  "$hashref = $obj->explode_format($format)"
+    This returns a hashref mapping each expanded permutation to a string
+    generated from the $format parameter.
+
+    (The return value is not cached, since the result depend on $format.)
+
 DIAGNOSTICS
-    "Error message here, perhaps with %s placeholders"
-        [Description of error here]
-
-    "Another error message here"
-        [Description of error here]
-
-        [Et cetera, et cetera]
+    TBD
 
 CONFIGURATION AND ENVIRONMENT
-    Text::Glob::Expand requires no configuration files or environment
+    "Text::Glob::Expand" requires no configuration files or environment
     variables.
 
+    There is one configurable option in the form of a package variable.
+
+  $MAX_CACHING
+    The package variable $Text::Glob::Expand::MAX_CACHING can be used to
+    control or disable the caching done by the "->explode" method. It should
+    be a positive integer, or zero.
+
+    The default value is 100, which means that up to 100
+    "Text::Glob::Expand" objects' "->explode" results will be cached, but no
+    more. You can disable caching by setting this to zero or less.
+
 DEPENDENCIES
-    None.
+    The dependencies should be minimal - I aim to have none.
+
+    For a definitive answer, see the Build.PL file included in the
+    distribution, or use the dependencies tool on <http://search.cpan.org>
 
 INCOMPATIBILITIES
     None reported.
