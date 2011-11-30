@@ -69,9 +69,6 @@ DEPENDENCIES
     For a definitive answer, see the Build.PL file included in the
     distribution, or use the dependencies tool on <http://search.cpan.org>
 
-INCOMPATIBILITIES
-    None reported.
-
 BUGS AND LIMITATIONS
     No bugs have been reported.
 
@@ -80,10 +77,10 @@ BUGS AND LIMITATIONS
     <http://rt.cpan.org>.
 
 AUTHOR
-    Nick Stokoe "<npw@cpan.org>"
+    Nick Stokoe "<wulee@cpan.org>"
 
 LICENCE AND COPYRIGHT
-    Copyright (c) 2011, Nick Stokoe "<npw@cpan.org>". All rights reserved.
+    Copyright (c) 2011, Nick Stokoe "<wulee@cpan.org>". All rights reserved.
 
     This module is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself. See perlartistic.
