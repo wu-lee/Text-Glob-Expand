@@ -21,7 +21,7 @@ use Module::Build;
 my $builder = Module::Build->new
     (module_name         => 'Text::Glob::Expand',
      license             => 'artistic',
-     dist_author         => 'Nick Stokoe <npw@cpan.org>',
+     dist_author         => 'Nick Stokoe <wulee@cpan.org>',
      dist_version_from   => 'lib/Text/Glob/Expand.pm',
      dist_abstract       => 'permute and expand glob-like text patterns',
      create_readme       => 1,
