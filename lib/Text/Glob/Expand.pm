@@ -84,6 +84,17 @@ sub _transform {
 }
 
 
+# Uncached version of ->explode
+sub _explode {
+    my $self = shift;
+
+    # calculate result
+    my $exploded = $self->_traverse(@$self);
+
+    return [map { $self->_transform(0, $_) } @$exploded];
+}
+
+
 ######################################################################
 # Public methods
 
@@ -182,16 +193,6 @@ sub parse {
     return bless \@c_stack, __PACKAGE__;
 };
 
-
-# Uncached version
-sub _explode {
-    my $self = shift;
-
-    # calculate result
-    my $exploded = $self->_traverse(@$self);
-
-    return [map { $self->_transform(0, $_) } @$exploded];
-}
 
 sub explode {
     my $self = shift;
