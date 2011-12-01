@@ -22,19 +22,26 @@ our $MAX_CACHING = 100;
 
 sub _partition {
     my $depth = shift;
-    my @partitions;
-    my $partition;
+
+    my @partitions; # An accumulator for partitions
+    my $partition = [];  # The current partition under construction
+
     foreach my $elem (@_) {
         if ($elem->depth > $depth) {
+            # Add element this to the current partition
             push @$partition, $elem;
         }
         else {
+            # Start a new partition. If there is a non-empty
+            # partition in construction, save it, then empty it.
             push @partitions, $partition
-                if $partition 
-                    && @$partition;
+                if $partition
+                && @$partition;
             $partition = [];
         }
     }
+
+    # Save the last partition, if not empty
     push @partitions, $partition
         if @$partition;
     return @partitions;
