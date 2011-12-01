@@ -546,10 +546,10 @@ generated from the C<$format> parameter.
 
 Using a notation based on a subset of the Backus Naur Form described
 by the
-L<http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2.1|HTTP
-1.1 RFC> (with the notable exception that white-space is significant
-here) the expression syntax expected by the C<< ->parse >> method can
-be defined like this:
+L<HTTP 1.1 RFC|http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2.1>
+(with the notable exception that white-space is significant here) the
+expression syntax expected by the C<< ->parse >> method can be defined
+like this:
 
     expression =
        segment *( brace-expression segment )
