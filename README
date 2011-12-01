@@ -188,6 +188,22 @@ BUGS AND LIMITATIONS
     "bug-Text-Glob-Expand@rt.cpan.org", or through the web interface at
     <http://rt.cpan.org>.
 
+SEE ALSO
+    Similar libraries I am aware of are:
+
+    Text::Glob
+        Wildcard matching against strings, which includes alternation (brace
+        expansion).
+
+    String::Glob::Permute
+        A permutation generator similar to this one. Supports numbered
+        ranges, but not format string expansion.
+
+    Plus there is of course Perl's own "glob" function, which supports brace
+    expansions. That however can be sensitive to unusually-named files in
+    the current director - and more importantly, like
+    "String::Glob::Permute" it does not implement format string expansions.
+
 AUTHOR
     Nick Stokoe "<wulee@cpan.org>"
 
