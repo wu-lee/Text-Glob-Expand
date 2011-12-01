@@ -6,7 +6,7 @@ use strict;
 use Carp;
 use Scalar::Util qw(refaddr);
 
-use version; our $VERSION = qv('0.1');
+use version; our $VERSION = qv('1.1');
 
 # Cache ->_explode results here
 our %CACHE;
