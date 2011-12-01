@@ -161,9 +161,9 @@ sub parse {
                 'start';
             },
             ',' => sub {
-                @alt_count?
-                    $new_alternative->() :
-                    $add_char->() ; # possibly this should be illegal?
+                @alt_count # This has a value added at the start of each brace
+                    or die "unexpected comma outside of a brace-expression";
+                $new_alternative->();
                 'start';
             },
             '' => sub {
