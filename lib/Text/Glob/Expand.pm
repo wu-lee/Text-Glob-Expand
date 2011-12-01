@@ -700,6 +700,30 @@ C<bug-Text-Glob-Expand@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org>.
 
 
+=head1 SEE ALSO
+
+Similar libraries I am aware of are:
+
+=over 4
+
+=item L<Text::Glob>
+
+Wildcard matching against strings, which includes alternation (brace
+expansion).
+
+=item L<String::Glob::Permute>
+
+A permutation generator similar to this one.  Supports numbered
+ranges, but not format string expansion.
+
+=back
+
+Plus there is of course Perl's own C<glob> function, which supports
+brace expansions.  That however can be sensitive to unusually-named
+files in the current director - and more importantly, like
+C<String::Glob::Permute> it does not implement format string
+expansions.
+
 =head1 AUTHOR
 
 Nick Stokoe  C<< <wulee@cpan.org> >>
