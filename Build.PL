@@ -46,6 +46,7 @@ my $builder = Module::Build->new
      requires => 
      {
       'Test::More' => 0,
+      'Sub::Exporter' => 0,
       'version'    => 0.77,
      },
      recommends => 

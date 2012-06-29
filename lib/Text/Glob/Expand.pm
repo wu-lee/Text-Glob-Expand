@@ -5,6 +5,13 @@ use warnings;
 use strict;
 use Carp;
 use Scalar::Util qw(refaddr);
+use Sub::Exporter -setup => {
+    exports => {
+        explode => sub { \&_explode_list },
+        explode_format => sub { \&_explode_format_list },
+    },
+};
+
 
 use version; our $VERSION = qv('1.1');
 
@@ -456,7 +463,7 @@ sub explode {
 }
 
 
-# A convenience which explodes and expands in one step.
+# A convenience method which explodes and expands in one step.
 sub explode_format {
     my $self = shift;
     my $format = shift;
@@ -464,6 +471,41 @@ sub explode_format {
     # Get the exploded result, and expand all the values using $format
     my $exploded = $self->explode;
     return {map { $_->text => $_->expand($format) } @$exploded};
+}
+
+
+
+######################################################################
+# Exportable functions
+
+# FIXME document
+# FIXME test these
+
+# A convenience function which explodes to a list of strings
+sub _explode_list {
+
+    return map {
+        my $glob = __PACKAGE__->parse($_);
+        map {
+            $_->text;
+        } @{ $glob->explode };
+    } @_;
+}
+
+
+# A convenience function which explodes to a list of formatted strings
+sub _explode_format_list {
+    @_ or croak "you must supply a format parameter";
+
+    defined (my $format = shift)
+        or croak "format parameter is undefined";
+
+    return map {
+        my $glob = __PACKAGE__->parse($_);
+        map {
+            $_->expand($format);
+        } @{ $glob->explode };
+    } @_;
 }
 
 
