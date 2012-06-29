@@ -467,6 +467,8 @@ sub explode_format {
 }
 
 
+no Scalar::Util;
+no Carp;
 1; # Magic true value required at end of module
 __END__
 
