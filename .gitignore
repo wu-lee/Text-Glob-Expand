@@ -13,3 +13,5 @@
 Makefile.PL
 Text-Glob-Expand-*
 /tmp
+/MYMETA.json
+/MYMETA.yml
