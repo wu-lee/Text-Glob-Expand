@@ -13,7 +13,7 @@ use Sub::Exporter -setup => {
 };
 
 
-use version; our $VERSION = qv('1.1');
+use version; our $VERSION = qv('1.1.1');
 
 # Cache ->_explode results here
 our %CACHE;
