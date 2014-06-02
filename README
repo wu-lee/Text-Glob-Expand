@@ -57,10 +57,9 @@ INTERFACE
 
 PARSING RULES
     Using a notation based on a subset of the Backus Naur Form described by
-    the http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2.1 (with
-    the notable exception that white-space is significant here) the
-    expression syntax expected by the "->parse" method can be defined like
-    this:
+    the <HTTP 1.1 RFC> (with the notable exception that white-space is
+    significant here) the expression syntax expected by the "->parse" method
+    can be defined like this:
 
         expression =
            segment *( brace-expression segment )
