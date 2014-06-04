@@ -13,7 +13,7 @@ use Sub::Exporter -setup => {
 };
 
 
-use version; our $VERSION = qv('1.1.1');
+# VERSION
 
 # Cache ->_explode results here
 our %CACHE;
@@ -517,12 +517,6 @@ __END__
 =head1 NAME
 
 Text::Glob::Expand - permute and expand glob-like text patterns
-
-
-=head1 VERSION
-
-This document describes Text::Glob::Expand version 0.1
-
 
 =head1 SYNOPSIS
 

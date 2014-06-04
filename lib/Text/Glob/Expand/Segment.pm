@@ -2,6 +2,8 @@ package Text::Glob::Expand::Segment;
 use strict;
 use warnings;
 
+# VERSION
+
 sub depth { shift->[1] }
 sub text { shift->[0] }
 
